@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shoppin_list/data/categories.dart';
 import 'package:shoppin_list/models/category.dart';
+import 'package:shoppin_list/models/grocery_item.dart';
 
 class NewItem extends StatefulWidget {
   const NewItem({super.key});
@@ -22,6 +23,14 @@ class _NewItemState extends State<NewItem> {
     // print(enteredQuantity);
     // print(_selectedCategory);
     // return;
+    Navigator.of(context).pop(
+      GroceryItem(
+        id: DateTime.now().toString(),
+         name: enteredName, 
+         quantity: enteredQuantity,
+          category: _selectedCategory,
+          ),
+    );
    }
   }
   @override
