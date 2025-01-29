@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false, // Remove this line for production appsrunning
       title: 'Flutter Groceries',
       theme: ThemeData.dark().copyWith(
         useMaterial3: true,

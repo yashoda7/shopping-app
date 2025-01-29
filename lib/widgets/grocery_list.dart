@@ -1,12 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:shoppin_list/data/dummy_item.dart';
+import 'package:shoppin_list/widgets/new_item.dart';
 
-class GroceryList  extends StatelessWidget{
+class GroceryList  extends StatefulWidget{
   const GroceryList({super.key});
+
+  @override
+  State<GroceryList> createState() => _GroceryListState();
+}
+
+class _GroceryListState extends State<GroceryList> {
+  void _addItem(){
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const NewItem()));
+}
+
   Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(
         title: Text('Grocery List'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              _addItem();
+            },
+          ),
+        ]
       ),
       body: ListView.builder(
         itemCount: groceryItems.length,
@@ -31,5 +50,4 @@ class GroceryList  extends StatelessWidget{
       // ),
     );
   }
-
 }
