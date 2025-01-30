@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shoppin_list/data/categories.dart';
 import 'package:shoppin_list/models/category.dart';
+// import 'package:shoppin_list/models/grocery_item.dart';
+import 'package:http/http.dart' as http;
 import 'package:shoppin_list/models/grocery_item.dart';
 
 class NewItem extends StatefulWidget {
@@ -15,24 +19,50 @@ class _NewItemState extends State<NewItem> {
   var enteredName='';
   var enteredQuantity=1;
   var _selectedCategory=categories[Categories.vegetables]!;
-  void _savaItem(){
-   bool isTrue= _formKey.currentState!.validate();
-   if(isTrue){
-    _formKey.currentState!.save();
-    // print(enteredName);
-    // print(enteredQuantity);
-    // print(_selectedCategory);
-    // return;
-    Navigator.of(context).pop(
-      GroceryItem(
-        id: DateTime.now().toString(),
-         name: enteredName, 
-         quantity: enteredQuantity,
-          category: _selectedCategory,
-          ),
-    );
-   }
+  void _savaItem() async {  // Make this an async function
+  final isValid = _formKey.currentState!.validate();
+  if (!isValid) {
+    return; // Stop execution if the form is invalid
   }
+
+  _formKey.currentState!.save();
+
+  final url = Uri.https(
+    'flutter-prep-b0bb1-default-rtdb.firebaseio.com', 
+    '/shopping-list.json'
+  );
+
+  try {
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'name': enteredName,
+        'quantity': enteredQuantity,
+        'category': _selectedCategory.title,
+      }),
+    );
+
+  final Map<String,dynamic> data= json.decode(response.body);
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      // Successfully added item to Firebase
+      print("Item added successfully!");
+
+      if (context.mounted) {
+        Navigator.of(context).pop( GroceryItem(id: data['name'], name: enteredName, quantity: enteredQuantity, category: _selectedCategory)); // Close the form after saving
+      }
+    } else {
+      // Handle HTTP error
+      print("Failed to add item: ${response.body}");
+    }
+  } catch (error) {
+    // Handle network or Firebase rule errors
+    print("Error: $error");
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
